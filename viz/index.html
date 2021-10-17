@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>D3.js</title>
+        <style>
+            text
+            {
+                font-family:Helvetica;
+                font-size:medium;
+                font-weight:550;
+            }
+            .flex-container 
+            {
+                margin-top: 50px;
+                display: flex;
+                flex-flow: row;
+                padding:5px;
+                justify-content: center;
+                align-items: flex-start;
+            }
+            th
+            {
+                font-family:Helvetica;
+                font-size:x-Large;
+                background:#A9CCE3;
+                border-width:0px;
+                padding: 10px;
+            }
+            .lib
+            {
+                height: 90vh;
+                width: 30vw;
+                overflow: scroll;
+            }
+            .sequence_box
+            {
+                justify-content: left;
+                height:100%;
+                width:65vw;
+                margin:5px;
+            }
+            .lib
+            {
+                margin:10px;
+            }
+            table
+            {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .lines
+            {
+                width: 100%;
+                justify-content: center;
+            }
+            .sequence 
+            {
+                height: 40px;
+                width: 70vw;
+                justify-content: center;
+            }
+            td
+            {
+                width:20px;
+                vertical-align:middle;
+                text-align:center;
+            }
+            .subseq
+            {
+                opacity: 70%;
+                border-color: black;
+                border-width: 10px;
+                transition: opacity 200ms;
+            }
+            .tooltip {	
+                position: absolute;
+                text-align: center;								
+                padding: 10px;				
+                font: 12px Helvetica;		
+                background: lightsteelblue;		
+                pointer-events: none;			
+            }
+            .visbutton
+            {
+                width: 20px;
+                height: 20px;
+            }
+            h3
+            {
+                font-family:Helvetica;
+                font-weight:bold;
+            }
+            .header
+            {
+                font-family:Helvetica;
+                font-size:x-large;
+                padding-left:20px;
+                padding-top:10px;
+            }
+            
+        </style>
+        <script src="https://d3js.org/d3.v7.min.js" defer></script>
+        <script src="https://d3js.org/d3-scale.v4.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+        <script src="viz.js" defer></script>
+    </head>
+    <body>
+        <div class='header'> 
+        </div>
+        <div class='cont'>
+            <div class='flex-container'>
+                <div class="sequence_box"></div>
+                <div class="lib"></div>
+            </div>
+        </div>
+    </body>
+</html>
