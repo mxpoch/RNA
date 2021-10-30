@@ -366,9 +366,9 @@ class SuffixTreePostProcess:
         index_in_seq = 0
         for subseq in converted:
             if subseq[1] not in index_dict.keys(): # replace for hash keys 
-                index_dict[subseq[1]] = [(subseq[0], index_in_seq)]
+                index_dict[subseq[1]] = {'subseq': [(subseq[0], index_in_seq)], 'merged': False}
             else:
-                index_dict[subseq[1]].append((subseq[0], index_in_seq))
+                index_dict[subseq[1]]['subseq'].append((subseq[0], index_in_seq))
             index_in_seq += 1
 
     def find_like(self, left:tuple, right:tuple, index_dict:dict, overlap_amount:int) -> list:
@@ -381,8 +381,8 @@ class SuffixTreePostProcess:
             return [(-1, -1, -1, -1)]
 
         likewise = []
-        for like_left in index_dict[left[1]]:
-            for like_right in index_dict[right[1]]:
+        for like_left in index_dict[left[1]]['subseq']:
+            for like_right in index_dict[right[1]]['subseq']:
                 compliment_overlap = like_left[0]+len(left[1]) - like_right[0]
                 
                 if compliment_overlap == overlap_amount:
@@ -409,10 +409,10 @@ class SuffixTreePostProcess:
         else: index_offsets[right_index] = 1
 
     def cleanse_index_dict(self, left:list, right:list, m_and_a:tuple, index_dict:dict):
-        index_dict[left[1]] = [x for x in index_dict[left[1]] if x[1] != m_and_a[2]]
-        index_dict[right[1]] = [x for x in index_dict[right[1]] if x[1] != m_and_a[3]]
-        if len(index_dict[left[1]]) == 0: del index_dict[left[1]]
-        if len(index_dict[right[1]]) == 0: del index_dict[right[1]]
+        index_dict[left[1]]['subseq'] = [x for x in index_dict[left[1]]['subseq'] if x[1] != m_and_a[2]]
+        index_dict[right[1]]['subseq'] = [x for x in index_dict[right[1]]['subseq'] if x[1] != m_and_a[3]]
+        if len(index_dict[left[1]]['subseq']) == 0: del index_dict[left[1]]
+        if len(index_dict[right[1]]['subseq']) == 0: del index_dict[right[1]]
 
     def remove_ss_inplace(self, left:list, right:list, index_dict:list, index_offsets:list, merge_indices:list, raw_comm:list, seq:str):
         # have to implement index offsets for lowest ranges...
@@ -442,8 +442,11 @@ class SuffixTreePostProcess:
             # updates index_dict
             # inserts new range into index_dict
             current_key = seq[ m_and_a[0]:m_and_a[1] ]
-            if current_key not in index_dict.keys(): index_dict[current_key] = [(m_and_a[0], m_and_a[2])]
-            else: index_dict[current_key].append((m_and_a[0], m_and_a[2]))
+            if current_key not in index_dict.keys(): 
+                index_dict[current_key] = {'subseq':[(m_and_a[0], m_and_a[2])], 'merged':True}
+            else: 
+                index_dict[current_key]['subseq'].append((m_and_a[0], m_and_a[2]))
+                # index_dict[current_key]['merged'] = True # may be redundant -- test
 
     def merge_raw(self) -> tuple:
         # initalizing strands 
@@ -490,7 +493,7 @@ class SuffixTreePostProcess:
 
         for seq in INDEX_DICT:
             for ky in seq.keys():
-                seq[ky] = [x[0] for x in seq[ky]]
+                seq[ky]['subseq'] = [x[0] for x in seq[ky]['subseq']]
                     
         return RAW_COMM, INDEX_DICT
 
@@ -502,7 +505,7 @@ class SuffixTreePostProcess:
                 if vk not in ids.keys(): 
                     valid = False
                     break
-            if valid: nlist.append(vk)
+            if valid or INDEX_DICT[0][vk]['merged']: nlist.append(vk)
         
         RET = [{} for sequence in INDEX_DICT]
         i = 0 
@@ -513,7 +516,7 @@ class SuffixTreePostProcess:
         
         return RET
 
-    def ss_to_json(self, EXACT:list, filename:str) -> None:
+    def ss_to_json(self, EXACT:list, filename:str) -> dict:
         jsonDICT = {}
         # creating metadata
         meta = {}
@@ -539,5 +542,5 @@ class SuffixTreePostProcess:
             jsonDICT[f'ss{j}'] = current
             j += 1
 
-        with open(f'{filename}.json', 'w') as viz:
+        with open(f'/content/drive/MyDrive/{filename}.json', 'w') as viz:
             json.dump(jsonDICT, viz, indent=4)
