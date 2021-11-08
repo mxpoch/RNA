@@ -198,10 +198,12 @@ class SuffixTreeSearch:
         # takes the first set of keys, and compares against the entire set
         # only keys common across all are returned
         for validator in KEYS[0]:
+            flag = True
             for kcheck in KEYS[1:]:
-                if validator in kcheck and validator not in validk:
-                    validk.append(validator)
-                    break
+                if validator in kcheck: continue
+                else: flag = False
+            if flag and validator not in validk:
+                validk.append(validator)
         return validk
 
     def valid(self, key:str) -> bool:
@@ -409,10 +411,10 @@ class SuffixTreePostProcess:
         else: index_offsets[right_index] = 1
 
     def cleanse_index_dict(self, left:list, right:list, m_and_a:tuple, index_dict:dict):
-        index_dict[left[1]]['subseq'] = [x for x in index_dict[left[1]]['subseq'] if x[1] != m_and_a[2]]
-        index_dict[right[1]]['subseq'] = [x for x in index_dict[right[1]]['subseq'] if x[1] != m_and_a[3]]
-        if len(index_dict[left[1]]['subseq']) == 0: del index_dict[left[1]]
-        if len(index_dict[right[1]]['subseq']) == 0: del index_dict[right[1]]
+        index_dict[left[1]] = [x for x in index_dict[left[1]] if x[1] != m_and_a[2]]
+        index_dict[right[1]] = [x for x in index_dict[right[1]] if x[1] != m_and_a[3]]
+        if left[1] in index_dict and len(index_dict[left[1]]) == 0: del index_dict[left[1]]
+        if right[1] in index_dict and len(index_dict[right[1]]) == 0: del index_dict[right[1]]
 
     def remove_ss_inplace(self, left:list, right:list, index_dict:list, index_offsets:list, merge_indices:list, raw_comm:list, seq:str):
         # have to implement index offsets for lowest ranges...
@@ -501,6 +503,7 @@ class SuffixTreePostProcess:
         nlist = []
         for vk in INDEX_DICT[0].keys():
             valid = True
+            # checking every vk for presence in every dict
             for ids in INDEX_DICT[1:]:
                 if vk not in ids.keys(): 
                     valid = False
@@ -518,9 +521,9 @@ class SuffixTreePostProcess:
 
     def ss_to_json(self, EXACT:list, filename:str) -> dict:
         jsonDICT = {}
-        # creating metadata
         meta = {}
         i = 0
+        # creating metadata header for json file
         for exact in EXACT:
             current = {}
             current['len'] = len(self.TSEQ[i]['seq'])
